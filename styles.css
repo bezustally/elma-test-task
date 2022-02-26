@@ -23,12 +23,12 @@ h1 {
   margin: 10px;
 }
 
-#schedule table {
+table {
   display: grid;
   margin: 0 auto;
   justify-content: center;
   border-collapse: collapse;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 th, td {
@@ -36,7 +36,6 @@ th, td {
   height: 50px;
   text-align: center;
   border: 1px solid lightgrey;
-  border-bottom-width: 0px;
 }
 
 th {

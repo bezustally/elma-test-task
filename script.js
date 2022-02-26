@@ -21,108 +21,109 @@ const createGrid = async () => {
   const tasks = await getData(taskUrl)
   const users = await getData(usersUrl)
 
-  const defineDates = tasks => {
-    const defineEarliestDate = tasks => {
-      let earliestDate = 0
-      for (let i in tasks) {
-        if (earliestDate < Date.parse(tasks[i].planStartDate)) {
-          earliestDate = tasks[i].planStartDate
-        }
+  const defineEarliestDate = tasks => {
+    let earliestDate = 0
+    for (let i in tasks) {
+      if (earliestDate < Date.parse(tasks[i].planStartDate)) {
+        earliestDate = tasks[i].planStartDate
       }
-      // we'll start building our columns from here:
-      return earliestDate
     }
+    return earliestDate
+  }
+  const earliestDate = defineEarliestDate(tasks)
+
+  const defineDates = tasks => {
 
     const dates = []
     const firstColumn = defineEarliestDate(tasks)
 
     for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
       let date = new Date(Date.parse(firstColumn) + (i * 86400000))
+      date = date.toISOString().split('T')[0]
       dates.push(date)
     }
 
     return dates
   }
+  const dates = defineDates(tasks)
+  dates.unshift('')
 
-  console.log(defineDates(tasks))
-
-  const joinData = (tasks, users) => {
-    
-    const data = []
-    const assignedTasks = []
+  const defineBacklog = tasks => {
     const backlog = []
-    
     for (let i = 0; i < tasks.length; i++) {
-      if (tasks[i].executor) {
-        assignedTasks.push(tasks[i])
-      } else {
+      if (!tasks[i].executor) {
         backlog.push(tasks[i])
       }
     }
+    return backlog
+  }
+  const backlog = defineBacklog(tasks)
+  console.log("Backlog: ", backlog)
 
-    for (let i = 0; i < assignedTasks.length; i++) {
-      for (let j = 0; j < users.length; j++) {
-        if (assignedTasks[i].executor === users[j].id) {
-          const date = assignedTasks[i].planStartDate
-          data.push({
-            "executor": users[j].firstName,
-            [date]: assignedTasks[i].subject
-          })
+  const joinData = (tasks, users) => {
+
+    const data = []
+
+    for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
+      const currentDate = dates[i]
+      
+      for (let i = 0; i < tasks.length; i++) {
+        if (currentDate === tasks[i].planStartDate ) {
+          
+          for (let j = 0; j < users.length; j++) {
+            if (tasks[i].executor === users[j].id) {
+              
+              data.push({
+                "executor": users[j].firstName,
+                [currentDate]: tasks[i].subject
+              })
+            } else if (!tasks[i].executor) {
+              data.push({
+                "executor": null,
+                [currentDate]: tasks[i].subject
+              })
+              break
+            }
+          }
         }
       }
     }
-    
-    console.log(data)
-    return data
-  }
 
+  return data
+  }
   const joinedData = joinData(tasks, users)
+  console.log(joinedData)
 
-  const _table_ = document.createElement('table'),
-    _tr_ = document.createElement('tr'),
-    _th_ = document.createElement('th'),
-    _td_ = document.createElement('td')
+  const executors = [...new Set(joinedData.filter(task => task.executor).map(task => task.executor))]
+  console.log(executors)
+  executors.unshift('')
 
-  function buildHtmlTable(data) {
-    const table = _table_.cloneNode(false)
-    const columns = createTableHead(data, table)
+  const root = document.getElementById("root")
+  const table = document.createElement('table')
 
-    for (let i = 0; i < data.length; i++) {
-      const tableRow = _tr_.cloneNode(false)
+  for (let i = 0; i < executors.length; i++) {
+    const executor = executors[i]
+    const tableRow = table.insertRow()
 
-      for (let j = 0; j < columns.length; j++) {
-        const td = _td_.cloneNode(false)
-        cellValue = data[i][columns[j]]
-        td.appendChild(document.createTextNode(data[i][columns[j]] || ''))
-        tableRow.appendChild(td)
-      }
+    for (let j = 0; j < dates.length; j++) {
+      const date = dates[j]
+      const cell = tableRow.insertCell()
 
-      table.appendChild(tableRow)
-    }
-    return table
-  }
-
-  function createTableHead(data, table) {
-    const dates = []
-    const tableRow = _tr_.cloneNode(false)
-
-    for (let i = 0; i < data.length; i++) {
-      for (let key in data[i]) {
-        if (data[i].hasOwnProperty(key) && dates.indexOf(key) === -1) {
-          dates.push(key)
-          const th = _th_.cloneNode(false)
-          th.appendChild(document.createTextNode(key))
-          tableRow.appendChild(th)
+      if (i < executors.length && j == 0) {
+        cell.appendChild(document.createTextNode(`${executor}`))
+      } else if (i == 0 && 0 < j < dates.length) {
+        cell.appendChild(document.createTextNode(`${date}`))
+      } else {
+        const task = joinedData[i][date]
+        if (task) {
+          cell.appendChild(document.createTextNode(task))
         }
       }
     }
-
-    table.appendChild(tableRow)
-    return dates
   }
 
-  const schedule = document.getElementById("schedule")
-  schedule.appendChild(buildHtmlTable(joinedData))
+  root.appendChild(table);
+
 }
 
 

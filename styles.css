@@ -1,0 +1,54 @@
+@font-face {
+  font-family: Comfortaa;
+  src: url("/font.ttf") format("truetype")
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Comfortaa;
+}
+
+.container {
+  width: 90vw;
+  margin: 0 auto;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+h1 {
+  text-align: center;
+  margin: 10px;
+}
+
+#schedule table {
+  display: grid;
+  margin: 0 auto;
+  justify-content: center;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+th, td {
+  width: 175px;
+  height: 50px;
+  text-align: center;
+  border: 1px solid lightgrey;
+  border-bottom-width: 0px;
+}
+
+th {
+  color: black;
+  background-color: darkgray;
+}
+
+table>tr:last-child {
+  border-bottom: 1px solid lightgray;
+}
+
+td:nth-child(1) {
+  color: black;
+  background-color: whitesmoke;
+}

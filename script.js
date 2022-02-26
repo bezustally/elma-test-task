@@ -1,3 +1,4 @@
+const AMOUNT_OF_COLUMNS = 7
 // for prod
 // const taskUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks'
 // const usersUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/users'
@@ -6,9 +7,7 @@
 const taskUrl = 'tasks.json'
 const usersUrl = 'users.json'
 
-const AMOUNT_OF_COLUMNS = 14
-
-const getData = async url => {
+async function getData(url) {
   const response = await fetch(url)
   if (!response.ok)
     throw new Error(response.statusText)
@@ -17,11 +16,10 @@ const getData = async url => {
   return data
 }
 
-const createGrid = async () => {
-  const tasks = await getData(taskUrl)
-  const users = await getData(usersUrl)
+function defineDates(tasks) {
+  const dates = []
 
-  const defineEarliestDate = tasks => {
+  const earliestDate = tasks => {
     let earliestDate = 0
     for (let i in tasks) {
       if (earliestDate < Date.parse(tasks[i].planStartDate)) {
@@ -30,25 +28,35 @@ const createGrid = async () => {
     }
     return earliestDate
   }
-  const earliestDate = defineEarliestDate(tasks)
 
-  const defineDates = tasks => {
+  const firstColumn = earliestDate(tasks)
 
-    const dates = []
-    const firstColumn = defineEarliestDate(tasks)
+  for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
+    let date = new Date(Date.parse(firstColumn) + (i * 86400000))
+    date = date.toISOString().split('T')[0]
+    dates.push(date)
+  }
 
-    for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
-      let date = new Date(Date.parse(firstColumn) + (i * 86400000))
-      date = date.toISOString().split('T')[0]
-      dates.push(date)
+  dates.unshift('Previous')
+  return dates
+}
+
+async function createApp() {
+  const tasks = await getData(taskUrl)
+  const users = await getData(usersUrl)
+  const dates = defineDates(tasks)
+
+  function defineExecutors() {
+    const executors = []
+    for (let i = 0; i < users.length; i++) {
+      executors.push(users[i].firstName)
     }
 
-    return dates
+    return executors
   }
-  const dates = defineDates(tasks)
-  dates.unshift('')
+  const executors = defineExecutors()
 
-  const defineBacklog = tasks => {
+  function defineBacklog(tasks) {
     const backlog = []
     for (let i = 0; i < tasks.length; i++) {
       if (!tasks[i].executor) {
@@ -58,73 +66,81 @@ const createGrid = async () => {
     return backlog
   }
   const backlog = defineBacklog(tasks)
-  console.log("Backlog: ", backlog)
-
-  const joinData = (tasks, users) => {
-
-    const data = []
-
-    for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
-      const currentDate = dates[i]
-      
-      for (let i = 0; i < tasks.length; i++) {
-        if (currentDate === tasks[i].planStartDate ) {
-          
-          for (let j = 0; j < users.length; j++) {
-            if (tasks[i].executor === users[j].id) {
-              
-              data.push({
-                "executor": users[j].firstName,
-                [currentDate]: tasks[i].subject
-              })
-            } else if (!tasks[i].executor) {
-              data.push({
-                "executor": null,
-                [currentDate]: tasks[i].subject
-              })
-              break
-            }
-          }
-        }
-      }
-    }
-
-  return data
-  }
-  const joinedData = joinData(tasks, users)
-  console.log(joinedData)
-
-  const executors = [...new Set(joinedData.filter(task => task.executor).map(task => task.executor))]
-  console.log(executors)
-  executors.unshift('')
 
   const root = document.getElementById("root")
-  const table = document.createElement('table')
+  const table = document.createElement('div')
+  table.classList = "table"
+  table.style.gridTemplateColumns = `repeat(${AMOUNT_OF_COLUMNS + 1}, 1fr)`
 
-  for (let i = 0; i < executors.length; i++) {
-    const executor = executors[i]
-    const tableRow = table.insertRow()
 
-    for (let j = 0; j < dates.length; j++) {
-      const date = dates[j]
-      const cell = tableRow.insertCell()
-
-      if (i < executors.length && j == 0) {
-        cell.appendChild(document.createTextNode(`${executor}`))
-      } else if (i == 0 && 0 < j < dates.length) {
-        cell.appendChild(document.createTextNode(`${date}`))
-      } else {
-        const task = joinedData[i][date]
-        if (task) {
-          cell.appendChild(document.createTextNode(task))
-        }
+  function createTable() {
+    root.appendChild(table)
+    for (let i = 0; i <= AMOUNT_OF_COLUMNS; i++) {
+      const header = document.createElement('div')
+      table.appendChild(header)
+      for (let j = 0; j <= executors.length; j++) {
+        const cell = document.createElement('div')
+        cell.classList = "table__cell"
+        cell.id = `${"x" + i + "y" + j}`
+        header.appendChild(cell)
       }
     }
   }
 
-  root.appendChild(table);
+  function createTableHeaders() {
+    const headers = document.querySelectorAll('.table div :first-child')
+    for (let i = 0; i < dates.length; i++) {
+      headers[i].textContent = dates[i]
+      headers[i].classList = 'table__header'
+    }
+  }
 
+  function createExecutors() {
+    const executorCells = document.querySelectorAll('.table :first-child div.table__cell')
+    for (let i = 0; i < executors.length; i++) {
+      executorCells[i].className = "table__executor"
+      executorCells[i].textContent = executors[i]
+    }
+  }
+
+  function assignTasks() {
+    const cells = document.querySelectorAll('.table__cell')
+    console.log(cells)
+  }
+
+  function makePrevButton() {
+    nextButton = document.querySelector('.table :first-child :first-child')
+    nextButton.textContent = "Previous"
+    nextButton.style.backgroundColor = 'rgb(207, 255, 250)';
+  }
+
+  function makeNextButton() {
+    nextButton = document.querySelector('.table :last-child :first-child')
+    nextButton.textContent = "Next"
+    nextButton.style.backgroundColor = 'rgb(207, 255, 250)';
+  }
+
+  function createBacklog() {
+    backlogHTML = document.getElementById("backlog")
+    for (let i = 0; i < backlog.length; i++) {
+      const task = backlog[i]
+      const div = document.createElement("div")
+      div.className = "backlog__task"
+      div.innerHTML = `
+                      <div class="backlog__title">${task.subject}</div>
+                      <div class="backlog__description">${task.description}</div>
+                    `
+      backlogHTML.appendChild(div)
+    }
+  }
+
+  createTable()
+  createTableHeaders()
+  createExecutors()
+  makePrevButton()
+  makeNextButton()
+  assignTasks()
+  createBacklog()
 }
 
-
-createGrid()
+createApp()

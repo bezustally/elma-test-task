@@ -1,7 +1,7 @@
 [
   {
     "id": "c5cbee78-f175-4454-a555-d7025e7723bd",
-    "subject": "Анализ",
+    "subject": "Задача 1",
     "description": "",
     "creationAuthor": 1,
     "executor": 1,
@@ -14,7 +14,7 @@
   },
   {
     "id": "c151ce57-7f42-4a1d-82a0-a7ee4f98c264",
-    "subject": "Планирование",
+    "subject": "Задача 2",
     "description": "",
     "creationAuthor": 1,
     "executor": 1,
@@ -27,7 +27,7 @@
   },
   {
     "id": "13dc5bbd-5040-486f-9f9e-412d1bde86da",
-    "subject": "Проектирование",
+    "subject": "Задача 3",
     "description": "",
     "creationAuthor": 1,
     "executor": 2,
@@ -45,7 +45,7 @@
     "creationAuthor": 1,
     "executor": 3,
     "creationDate": "2022-03-14",
-    "planStartDate": "2022-03-01",
+    "planStartDate": "2022-03-03",
     "planEndDate": "2022-03-04",
     "endDate": "2022-02-25",
     "status": 1,
@@ -67,11 +67,11 @@
   {
     "id": "d3e803cb-77a5-47f4-8bbf-fd18871abaf0",
     "subject": "Заместитель",
-    "description": "",
+    "description": "нужно замещать",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
-    "planStartDate": "2022-02-28",
+    "planStartDate": "2022-03-01",
     "planEndDate": "2022-03-01",
     "endDate": "2022-02-25",
     "status": 1,
@@ -80,11 +80,11 @@
   {
     "id": "83fbb62d-3515-4245-ab79-3d76ee8753f9",
     "subject": "Наблюдатель",
-    "description": "",
+    "description": "нужно наблюдать",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
-    "planStartDate": "2022-02-28",
+    "planStartDate": "2022-02-26",
     "planEndDate": "2022-03-01",
     "endDate": "2022-02-25",
     "status": 1,
@@ -93,11 +93,11 @@
   {
     "id": "d2140934-1417-44c0-a15a-32c28c6e14b2",
     "subject": "Декоратор",
-    "description": "",
+    "description": "нужно декорировать",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
-    "planStartDate": "2022-02-28",
+    "planStartDate": "2022-03-03",
     "planEndDate": "2022-03-01",
     "endDate": "2022-02-25",
     "status": 1,
@@ -106,7 +106,7 @@
   {
     "id": "d5f122aa-c5cd-4500-a6ec-0ab95eb1020c",
     "subject": "Фасад",
-    "description": "",
+    "description": "нужно сделать фасад",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -119,7 +119,7 @@
   {
     "id": "ff3699f2-b303-4b8b-ba21-86f6eeb61ecc",
     "subject": "Адаптер",
-    "description": "",
+    "description": "заадаптируй!",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -132,7 +132,7 @@
   {
     "id": "3791910c-3b98-418d-ad76-f0a2d2cbfe64",
     "subject": "Строитель",
-    "description": "",
+    "description": "построй",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -145,7 +145,7 @@
   {
     "id": "47f86950-15b9-47ae-ac12-fdea0d73056c",
     "subject": "Мост",
-    "description": "",
+    "description": "наводи мосты",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -158,7 +158,7 @@
   {
     "id": "0c9c0e1b-70fa-497b-a0b6-b652546e69cc",
     "subject": "Команда",
-    "description": "",
+    "description": "командуй почём зря",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -171,7 +171,7 @@
   {
     "id": "f41315cf-0e1e-4cf7-9abd-17800e0536b0",
     "subject": "Итератор",
-    "description": "",
+    "description": "итетируй до бесконечности",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -184,7 +184,7 @@
   {
     "id": "96262507-bb55-489a-b88c-e54dd100e2f7",
     "subject": "Посредник",
-    "description": "",
+    "description": "посредничай до талого",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -197,7 +197,7 @@
   {
     "id": "8d28f7eb-db42-4d4e-ab45-84c844c9dc0a",
     "subject": "Прототип",
-    "description": "",
+    "description": "отпрототипируй меня",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -210,7 +210,7 @@
   {
     "id": "57548f30-db24-41fd-ab0b-0525b82c1462",
     "subject": "Компоновщик",
-    "description": "",
+    "description": "попробуй скомпоновать это",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -223,7 +223,7 @@
   {
     "id": "510bf34c-681a-48a1-8527-227535138ce6",
     "subject": "Снимок",
-    "description": "",
+    "description": "заснять!",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -236,7 +236,7 @@
   {
     "id": "1c72936a-2e6a-4f84-94f5-8319939e4b11",
     "subject": "Состояние",
-    "description": "",
+    "description": "солнцестояние",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -249,7 +249,7 @@
   {
     "id": "f9936a79-173a-4c9b-a809-b27264e15221",
     "subject": "Стратегия",
-    "description": "",
+    "description": "тактика без стратегии суета перед поражением",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -262,7 +262,7 @@
   {
     "id": "49779e89-8245-41a3-8e4b-ad3caba960f6",
     "subject": "Одиночка",
-    "description": "",
+    "description": "найди кого-нибудь",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -275,7 +275,7 @@
   {
     "id": "d0e41cab-03da-4270-9bdb-ad93d84b9de6",
     "subject": "Легковес",
-    "description": "",
+    "description": "%^(*©˚…•",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -288,7 +288,7 @@
   {
     "id": "6d52714a-5b94-47cd-a27f-6332ca00523d",
     "subject": "Посетитель",
-    "description": "",
+    "description": "скоро прилетит НЛО",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -301,9 +301,9 @@
   {
     "id": "6ec9e547-d7b7-460f-b771-0d02b4206972",
     "subject": "Фабричный метод",
-    "description": "",
+    "description": "делаем шоколад",
     "creationAuthor": 1,
-    "executor": null,
+    "executor": 8,
     "creationDate": "2022-02-25",
     "planStartDate": "2022-02-28",
     "planEndDate": "2022-03-01",
@@ -314,7 +314,7 @@
   {
     "id": "57a6927c-ac33-4e26-bdcf-41954fdc4bd9",
     "subject": "Абстрактная фабрика",
-    "description": "",
+    "description": "Willy Wonka",
     "creationAuthor": 1,
     "executor": null,
     "creationDate": "2022-02-25",
@@ -327,11 +327,11 @@
   {
     "id": "122b1ab2-b93d-4816-a8ae-a2c17522a826",
     "subject": "Цепочка обязанностей",
-    "description": "",
+    "description": "you just have to",
     "creationAuthor": 1,
-    "executor": null,
+    "executor": 8,
     "creationDate": "2022-02-25",
-    "planStartDate": "2022-02-28",
+    "planStartDate": "2022-03-03",
     "planEndDate": "2022-03-01",
     "endDate": "2022-02-25",
     "status": 1,

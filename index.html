@@ -9,9 +9,17 @@
 </head>
 <body>
   
-  <div id="root" class="container mt-1">
+  <div class="container mt-1" onselectstart="return false">
     <h1>Planner</h1>
+    <div id="root">
+      <aside id="backlog" class="backlog">
+        <h2 class="backlog__header">Backlog</h2>
+        <input class="backlog__input" type="text" placeholder="Type something here" autofocus>
+      </aside>
+    </div>
   </div>
+
+  
 
   <script src="script.js"></script>
 </body>

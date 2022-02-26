@@ -1,3 +1,9 @@
+:root {
+  --main: aliceblue;
+  --second: lightgray;
+  --accent: lightsteelblue
+}
+
 @font-face {
   font-family: Comfortaa;
   src: url("/font.ttf") format("truetype")
@@ -9,10 +15,12 @@
   font-family: Comfortaa;
 }
 
+
 .container {
   width: 90vw;
   margin: 0 auto;
 }
+
 
 .mt-1 {
   margin-top: 1rem;
@@ -20,34 +28,83 @@
 
 h1 {
   text-align: center;
-  margin: 10px;
+  margin: 30px;
 }
 
-table {
+.table {
+  width: fit-content;
   display: grid;
-  margin: 0 auto;
-  justify-content: center;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-th, td {
-  width: 175px;
+.table__header, .table__executor, .table__cell {
+  width: 100px;
   height: 50px;
   text-align: center;
-  border: 1px solid lightgrey;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  border-bottom: 1px solid var(--second);
 }
 
-th {
-  color: black;
-  background-color: darkgray;
+.table__header {
+  background-color: var(--main);
+  border-bottom: none;
 }
 
-table>tr:last-child {
-  border-bottom: 1px solid lightgray;
+aside {
+  float: right;
 }
 
-td:nth-child(1) {
-  color: black;
-  background-color: whitesmoke;
+.backlog {
+  background-color: var(--main);
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.backlog__header {
+  text-align: center;
+  margin: 13px;
+  margin: 20px;
+  font-size: 22px;
+  font-weight: 300;
+}
+
+.backlog__task {
+  font-size: 13px;
+  margin: 10px;
+  border: 1px solid #fff;
+  padding: 7px;
+  border-radius: 3px;
+}
+
+.backlog__task:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  cursor: pointer;
+}
+
+.backlog__title {
+  font-weight: bold;
+  margin: 3px 0;
+}
+
+.backlog__input {
+  width: 95%;
+  display: block;
+  margin: 0 auto;
+  font-size: 13px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  height: 24px;
+  text-indent: 3px;
+  outline: none;
+
+}
+
+#root {
+  display: flex;
+  flex-direction: row-reverse;
 }

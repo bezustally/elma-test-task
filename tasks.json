@@ -2,7 +2,7 @@
   {
     "id": "c5cbee78-f175-4454-a555-d7025e7723bd",
     "subject": "Задача 1",
-    "description": "",
+    "description": "Нужно выполнить первую задачу",
     "creationAuthor": 1,
     "executor": 1,
     "creationDate": "2022-02-25",
@@ -15,7 +15,7 @@
   {
     "id": "c151ce57-7f42-4a1d-82a0-a7ee4f98c264",
     "subject": "Задача 2",
-    "description": "",
+    "description": "Нужно выполнить вторую задачу",
     "creationAuthor": 1,
     "executor": 1,
     "creationDate": "2022-02-25",
@@ -28,11 +28,11 @@
   {
     "id": "13dc5bbd-5040-486f-9f9e-412d1bde86da",
     "subject": "Задача 3",
-    "description": "",
+    "description": "Нужно выполнить третью задачу",
     "creationAuthor": 1,
     "executor": 2,
     "creationDate": "2022-02-25",
-    "planStartDate": "2022-03-01",
+    "planStartDate": "2022-03-13",
     "planEndDate": "2022-03-02",
     "endDate": "2022-02-25",
     "status": 1,
@@ -40,8 +40,8 @@
   },
   {
     "id": "d9e5f3be-6bc0-46b4-a607-73e90fb04a78",
-    "subject": "Разработка",
-    "description": "",
+    "subject": "Задача 4",
+    "description": "Нужно выполнить четвёртую задачу",
     "creationAuthor": 1,
     "executor": 3,
     "creationDate": "2022-03-14",
@@ -53,7 +53,7 @@
   },
   {
     "id": "36ab2642-e897-41bf-b18d-03551eb0a295",
-    "subject": "Тестирование",
+    "subject": "Задача 5",
     "description": "",
     "creationAuthor": 1,
     "executor": 5,

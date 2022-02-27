@@ -28,7 +28,6 @@ function defineDates(tasks) {
     }
     return earliestDate
   }
-
   const firstColumn = earliestDate(tasks)
 
   for (let i = 0; i < AMOUNT_OF_COLUMNS; i++) {
@@ -42,46 +41,38 @@ function defineDates(tasks) {
 }
 
 async function createApp() {
-  const tasks = await getData(taskUrl)
-  const users = await getData(usersUrl)
-  const dates = defineDates(tasks)
-
-  function defineExecutors() {
-    const executors = []
-    for (let i = 0; i < users.length; i++) {
-      executors.push(users[i].firstName)
-    }
-
-    return executors
-  }
-  const executors = defineExecutors()
-
-  function defineBacklog(tasks) {
-    const backlog = []
-    for (let i = 0; i < tasks.length; i++) {
-      if (!tasks[i].executor) {
-        backlog.push(tasks[i])
-      }
-    }
-    return backlog
-  }
-  const backlog = defineBacklog(tasks)
 
   const root = document.getElementById("root")
   const table = document.createElement('div')
   table.classList = "table"
   table.style.gridTemplateColumns = `repeat(${AMOUNT_OF_COLUMNS + 1}, 1fr)`
 
+  const tasks = await getData(taskUrl)
+  const users = await getData(usersUrl)
+  const dates = defineDates(tasks)
+
+  function separateTasks(tasks) {
+    const backlog = []
+    const assignedTasks = []
+    for (let i = 0; i < tasks.length; i++) {
+      if (!tasks[i].executor) {
+        backlog.push(tasks[i])
+      } else {
+        assignedTasks.push(tasks[i])
+      }
+    }
+    return {assignedTasks, backlog}
+  }
+  const { assignedTasks, backlog } = separateTasks(tasks)
 
   function createTable() {
     root.appendChild(table)
     for (let i = 0; i <= AMOUNT_OF_COLUMNS; i++) {
       const header = document.createElement('div')
       table.appendChild(header)
-      for (let j = 0; j <= executors.length; j++) {
+      for (let j = 0; j <= users.length; j++) {
         const cell = document.createElement('div')
         cell.classList = "table__cell"
-        cell.id = `${"x" + i + "y" + j}`
         header.appendChild(cell)
       }
     }
@@ -89,35 +80,56 @@ async function createApp() {
 
   function createTableHeaders() {
     const headers = document.querySelectorAll('.table div :first-child')
-    for (let i = 0; i < dates.length; i++) {
-      headers[i].textContent = dates[i]
-      headers[i].classList = 'table__header'
-    }
+    const today = new Date().toISOString().split('T')[0]
+    headers.forEach((header, idx) => {
+      if (dates[idx] === today) {
+        header.parentElement.classList = 'today'
+      }
+      header.textContent = dates[idx]
+      header.classList = 'table__header'
+    })
   }
 
   function createExecutors() {
     const executorCells = document.querySelectorAll('.table :first-child div.table__cell')
-    for (let i = 0; i < executors.length; i++) {
+    for (let i = 0; i < users.length; i++) {
       executorCells[i].className = "table__executor"
-      executorCells[i].textContent = executors[i]
+      executorCells[i].textContent = users[i].firstName
+    }
+  }
+
+  function createCells() {
+    const cells = document.querySelectorAll('.table__cell')
+    for (let i = 0; i < cells.length; i++) {
+      let userIndex = i % users.length
+      let dateIndex = Math.floor(i / users.length) + 1
+      cells[i].id = `${dates[dateIndex]} ${users[userIndex].id}`
     }
   }
 
   function assignTasks() {
     const cells = document.querySelectorAll('.table__cell')
-    console.log(cells)
+    cells.forEach(cell => {
+      assignedTasks.forEach(task => {
+        if (task.planStartDate == cell.id.split(' ')[0] && task.executor == cell.id.split(' ')[1]) {
+          cell.textContent = task.subject
+          cell.classList.add("table_cell-task")
+          cell.id = task.id
+        }
+      })
+    })
   }
 
   function makePrevButton() {
-    nextButton = document.querySelector('.table :first-child :first-child')
-    nextButton.textContent = "Previous"
-    nextButton.style.backgroundColor = 'rgb(207, 255, 250)';
+    prevButton = document.querySelector('.table :first-child :first-child')
+    prevButton.textContent = "Previous"
+    prevButton.classList.add("prev-btn")
   }
 
   function makeNextButton() {
     nextButton = document.querySelector('.table :last-child :first-child')
     nextButton.textContent = "Next"
-    nextButton.style.backgroundColor = 'rgb(207, 255, 250)';
+    nextButton.classList.add("next-btn")
   }
 
   function createBacklog() {
@@ -134,13 +146,37 @@ async function createApp() {
     }
   }
 
+  function createTooltips() {
+    const cellsWithTask = document.querySelectorAll('.table_cell-task')
+    for (let i = 0; i < cellsWithTask.length; i++) {
+      const tooltip = document.createElement('span')
+      tooltip.className = 'tooltip'
+
+      const taskId = cellsWithTask[i].id
+      
+      for (let j = 0; j < assignedTasks.length; j++) {
+        if (taskId === assignedTasks[j].id) {
+          currentTask = assignedTasks[j]
+          tooltip.innerHTML = `
+                              ${currentTask.description}
+                              <br><br>
+                              срок ${currentTask.planEndDate}
+                              `
+        }
+      }
+      cellsWithTask[i].appendChild(tooltip)
+    }
+  }
+
   createTable()
   createTableHeaders()
   createExecutors()
   makePrevButton()
   makeNextButton()
+  createCells()
   assignTasks()
   createBacklog()
+  createTooltips()
 }
 
 createApp()

@@ -1,26 +1,40 @@
 :root {
   --main: aliceblue;
   --second: lightgray;
-  --accent: lightsteelblue
+  --accent: lightsteelblue;
+  --active: rgb(207, 255, 250);
+  --radius: 5px;
+  --elma-red: #E62D31;
+  --elma-ocher: #F9BE01;
+  --elma-blue: #5081E6;
+  --elma-azure: #5AD2FF;
+}
+
+#root {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
 }
 
 @font-face {
-  font-family: Comfortaa;
+  font-family: Inter;
   src: url("/font.ttf") format("truetype")
 }
 
 * {
   margin: 0;
   padding: 0;
-  font-family: Comfortaa;
+  font-family: Inter;
 }
 
+span {
+  font-family: Inter;
+}
 
 .container {
   width: 90vw;
   margin: 0 auto;
 }
-
 
 .mt-1 {
   margin-top: 1rem;
@@ -46,7 +60,7 @@ h1 {
   justify-content: center;
   align-content: center;
   flex-direction: column;
-  border-bottom: 1px solid var(--second);
+  border-bottom: 0.5px solid var(--second);
 }
 
 .table__header {
@@ -54,14 +68,43 @@ h1 {
   border-bottom: none;
 }
 
-aside {
-  float: right;
+.table_cell-task {
+  background-color: var(--second);
+  border-radius: var(--radius);
+  transform: scale(0.90);
+}
+
+.table_cell-task:hover {
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.table_cell-task:hover>.tooltip {
+  visibility: visible;
+}
+
+.tooltip {
+  border: 1px solid var(--accent);
+  position: absolute;
+  left: 101px;
+  min-width: 125px;
+  height: 125px;
+  border-radius: var(--radius);
+  background-color: #fff;
+  visibility: hidden;
+  color: black;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
 }
 
 .backlog {
   background-color: var(--main);
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
 
 .backlog__header {
@@ -70,6 +113,11 @@ aside {
   margin: 20px;
   font-size: 22px;
   font-weight: 300;
+  cursor: pointer;
+}
+
+.backlog__header:hover {
+  text-decoration: underline;
 }
 
 .backlog__task {
@@ -77,7 +125,7 @@ aside {
   margin: 10px;
   border: 1px solid #fff;
   padding: 7px;
-  border-radius: 3px;
+  border-radius: var(--radius);
 }
 
 .backlog__task:hover {
@@ -87,7 +135,7 @@ aside {
 }
 
 .backlog__title {
-  font-weight: bold;
+  font-weight: 600;
   margin: 3px 0;
 }
 
@@ -97,14 +145,40 @@ aside {
   margin: 0 auto;
   font-size: 13px;
   border: 1px solid var(--accent);
-  border-radius: 3px;
+  border-radius: var(--radius);
   height: 24px;
   text-indent: 3px;
   outline: none;
 
 }
 
-#root {
-  display: flex;
-  flex-direction: row-reverse;
+.prev-btn, .next-btn {
+  background-color: var(--main);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.prev-btn {
+  border-top-left-radius: var(--radius);
+}
+
+.prev-btn:hover, .next-btn:hover {
+  color: white;
+  background-color: var(--accent);
+}
+
+.today {
+  height: min-content;
+  margin: 0 -1px;
+  position: relative;
+  border-left: 2px solid var(--accent);
+}
+
+.today::before {
+  content: "Today";
+  position: absolute;
+  top: -25px;
+  left: -20px;
+  color: var(--accent);
+  font-weight: 500;
 }

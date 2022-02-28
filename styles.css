@@ -78,6 +78,8 @@ h1 {
   background-color: var(--accent);
   color: white;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .table_cell-task:hover>.tooltip {
@@ -134,9 +136,14 @@ h1 {
   cursor: pointer;
 }
 
+.backlog__task:hover>.backlog__title {
+  opacity: 1;
+}
+
 .backlog__title {
   font-weight: 600;
   margin: 3px 0;
+  opacity: 0.75;
 }
 
 .backlog__input {

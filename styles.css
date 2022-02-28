@@ -144,6 +144,7 @@ h1 {
   background-color: var(--main);
   border-top-right-radius: var(--radius);
   border-bottom-right-radius: var(--radius);
+  width: 30%;
 }
 
 .backlog__header {
@@ -237,4 +238,8 @@ h1 {
 
 .executors {
   border-left: 0.5px solid var(--main)
+}
+
+.visiting {
+  background-color: var(--accent);
 }

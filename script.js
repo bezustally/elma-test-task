@@ -61,7 +61,7 @@ async function createApp() {
   const users = await getData(usersUrl)
   let dates = defineDates(tasks)
 
-  const { assignedTasks, backlog } = separateTasks(tasks)
+  let { assignedTasks, backlog } = separateTasks(tasks)
 
   function createTable() {
     const root = document.getElementById("root")
@@ -101,6 +101,7 @@ async function createApp() {
     const executorCells = document.querySelectorAll('.table :first-child div.table__cell')
     for (let i = 0; i < users.length; i++) {
       executorCells[i].className = "table__executor"
+      executorCells[i].id = `executor_${users[i].id}`
       executorCells[i].textContent = users[i].firstName
     }
   }
@@ -169,23 +170,18 @@ async function createApp() {
 
     function operateBacklog() {
       const backloggedTasks = document.querySelectorAll('.backlog__task')
-
-      backloggedTasks.forEach(task => {
+      
+      backloggedTasks.forEach((task, idx) => {
         const tooltip = document.createElement('span')
         tooltip.className = 'tooltip'
 
-        for (let i = 0; i < backlog.length; i++) {
-          if (task.id === backlog[i].id) {
-            currentTask = backlog[i]
-            tooltip.innerHTML = `
-                              Задача создана: ${currentTask.creationDate}
-                              <br><br>
-                              Планируется начать: ${currentTask.planStartDate}
-                              <br>
-                              Планируется закончить: ${currentTask.planEndDate}
-                              `
-          }
-        }
+        tooltip.innerHTML = `
+                            Задача создана: ${backlog[idx].creationDate}
+                            <br><br>
+                            Планируется начать: ${backlog[idx].planStartDate}
+                            <br>
+                            Планируется закончить: ${backlog[idx].planEndDate}
+                            `
         task.appendChild(tooltip)
       })
     }
@@ -196,11 +192,13 @@ async function createApp() {
   }
 
   function createBacklog() {
-    backlogHTML = document.getElementById("backlog")
+    backlogHTML = document.getElementById("backlog__tasks")
+    backlogHTML.innerHTML = ''
     for (let i = 0; i < backlog.length; i++) {
       const task = backlog[i]
       const div = document.createElement("div")
-      div.id = task.id
+      div.id = `backlog_${i}`
+      div.dataset.taskId = task.id
       div.className = "backlog__task"
       div.draggable = true
       div.innerHTML = `
@@ -258,95 +256,107 @@ async function createApp() {
   }
 
   function createDragNDrop() {
-    const draggables = document.querySelectorAll('.table__cell, .table__executor, .backlog__task')
-    draggables.forEach(draggable => {
-      draggable.addEventListener('dragstart', dragStart)
-      draggable.addEventListener('dragend', dragEnd)
-      draggable.addEventListener('dragenter', dragEnter)
-      draggable.addEventListener('dragleave', dragLeave)
-      draggable.addEventListener('dragover', dragOver)
-      draggable.addEventListener('drop', dragDrop)
+    const items = document.querySelectorAll('.table__cell')
+    items.forEach(item => {
+      item.addEventListener('dragstart', dragStart)
+      item.addEventListener('dragend', dragEnd)
+      item.addEventListener('dragenter', dragEnter)
+      item.addEventListener('dragleave', dragLeave)
+      item.addEventListener('dragover', dragOver)
+      item.addEventListener('drop', dragDrop)
     })
 
-    const destinations = document.querySelectorAll('.backlog, .backlog__header')
+    const tasks = document.querySelectorAll('.backlog__task')
+    tasks.forEach(task => {
+      task.addEventListener('dragstart', dragStart)
+      task.addEventListener('dragend', dragEnd)
+      task.addEventListener('dragenter', dragEnter)
+      task.addEventListener('dragleave', dragLeave)
+      task.addEventListener('dragover', dragOver)
+      task.addEventListener('drop', dragDrop)
+    })
+
+    const destinations = document.querySelectorAll('.backlog, .table__executor')
     destinations.forEach(destination => {
       destination.addEventListener('dragenter', dragEnter)
       destination.addEventListener('dragleave', dragLeave)
+      destination.addEventListener('dragover', dragOver)
       destination.addEventListener('drop', dragDrop)
     })
 
     function dragEnter() {
-
-      const _ = this.classList.value
-      if (_ == "table__executor" || _ == "table__cell" || _ == "table__cell table__cell-task" || _ == "backlog") {
-        this.style.backgroundColor = "var(--accent)"
-      }
-      if (_ == "backlog__header") {
-        if (this.parentElement.style.backgroundColor = "var(--accent)") {
-          this.style.backgroundColor = "var(--accent)"
-        } else {
-          this.parentElement.style.backgroundColor = "var(--accent)"
-          this.style.backgroundColor = "var(--accent)"
-        }
-      }
+      this.classList.value += " visiting"
     }
 
     function dragLeave() {
-
-      const _ = this.classList.value
-      if (_ == "table__executor" || _ == "table__cell" || _ == "table__cell table__cell-task" || _ == "backlog") {
-        this.style.backgroundColor = ""
-      }
-      if (_ == "backlog__header") {
-        if (this.parentElement.style.backgroundColor = "var(--accent)") {
-          this.style.backgroundColor = ""
-        }
-      } else if (_ == "backlog") {
-        this.getElementsByClassName('backlog__header')[0].style.backgroundColor = ""
-      }
+      string = this.classList.value
+      newString = string.replace(' visiting', '')
+      this.classList.value = newString
     }
 
-    function dragOver() {
-      return
+    function dragOver(e) {
+      e.preventDefault()
+      e.stopPropagation()
     }
 
-    function dragDrop() {
+    function dragDrop(e) {
+      e.preventDefault()
+      e.stopPropagation()
+
+      string = this.classList.value
+      newString = string.replace(' visiting', '')
+      this.classList.value = newString
+
       console.log(this)
-      const _ = this.classList.value
-      const parent = task.parentElement
 
       switch (this.classList.value) {
-        case "backlog":
-          this.style.backgroundColor = ""
-          console.log(task.id)
-          break
-        case "backlog__header":
-          parent.style.backgroundColor = ""
-          this.style.backgroundColor = ""
-          console.log(task.id)
-          break
         case "table__executor":
-          this.style.backgroundColor = ""
-          console.log(task.id)
+          
+          const executorId = this.id.split("_")[1]
+          let data = e.dataTransfer.getData("text/plain")
+
+          let taskPositionInBacklog = data.split("_")[1]
+          console.log(taskPositionInBacklog)
+          removeTaskFromBacklog(taskPositionInBacklog)
+          
+          e.target.innerHTML = data
+          
+          console.log(backlog)
           break
+        
         case "table__cell":
-          console.log("table cell!")
-          this.style.backgroundColor = ""
-          console.log(task.id)
+          console.log("switch case", this.id)
           break
+        
+        case "table__cell table__cell-task":
+          console.log("switch case", this.id)
+          break
+        
+        case "backlog":
+          console.log("switch case", this.id)
+          break
+      }
+
+      function removeTaskFromBacklog(index) {
+        backlog.splice(index, 1)
+        createBacklog()
+        createTooltips()
+        createDragNDrop()
       }
     }
 
-    function dragStart() {
-      this.style.opacity = "0.5"
-      console.log(this.id)
-      tooltip = this.getElementsByClassName('tooltip')[0]
+    function dragStart(e) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData("text/plain", e.target.getAttribute('id'))
+      e.target.style.opacity = "0.5"
+      console.log(e)
+      tooltip = e.target.getElementsByClassName('tooltip')[0]
       tooltip.classList.value = "hidden"
     }
 
-    function dragEnd() {
-      this.style.opacity = "1"
-      tooltip = this.getElementsByClassName('hidden')[0]
+    function dragEnd(e) {
+      e.target.style.opacity = "1"
+      tooltip = e.target.getElementsByClassName('hidden')[0]
       tooltip.classList = "tooltip"
     }
   }

@@ -129,34 +129,66 @@ async function createApp() {
       assignedTasks.forEach(task => {
         if (task.planStartDate == cell.id.split(' ')[0] && task.executor == cell.id.split(' ')[1]) {
           cell.textContent = task.subject
-          cell.classList.toggle("table_cell-task")
+          cell.classList.toggle("table__cell-task")
           cell.id = task.id
+          cell.draggable = true
+          cell.setAttribute('ondragstart', 'startDrag(event)')
+          cell.setAttribute('ondragend', 'endDrag(event)')
         }
       })
     })
   }
 
   function createTooltips() {
-    const cellsWithTask = document.querySelectorAll('.table_cell-task')
-    
-    cellsWithTask.forEach(cell => {
-      const tooltip = document.createElement('span')
-      tooltip.className = 'tooltip'
 
-      const taskId = cell.id
+    function operateCells() {
+      const cellsWithTask = document.querySelectorAll('.table__cell-task')
 
-      for (let j = 0; j < assignedTasks.length; j++) {
-        if (taskId === assignedTasks[j].id) {
-          currentTask = assignedTasks[j]
-          tooltip.innerHTML = `
+      cellsWithTask.forEach(cell => {
+        const tooltip = document.createElement('span')
+        tooltip.className = 'tooltip'
+
+        const taskId = cell.id
+
+        for (let i = 0; i < assignedTasks.length; i++) {
+          if (taskId === assignedTasks[i].id) {
+            currentTask = assignedTasks[i]
+            tooltip.innerHTML = `
                               ${currentTask.description}
                               <br><br>
                               срок ${currentTask.planEndDate}
                               `
+          }
         }
-      }
-      cell.appendChild(tooltip)
-    })
+        cell.appendChild(tooltip)
+      })
+    }
+
+    function operateBacklog() {
+      const backloggedTasks = document.querySelectorAll('.backlog__task')
+
+      backloggedTasks.forEach(task => {
+        const tooltip = document.createElement('span')
+        tooltip.className = 'tooltip'
+
+        for (let i = 0; i < backlog.length; i++) {
+          if (task.id === backlog[i].id) {
+            currentTask = backlog[i]
+            tooltip.innerHTML = `
+                              Задача создана: ${currentTask.creationDate}
+                              <br><br>
+                              Планируется начать: ${currentTask.planStartDate}
+                              <br>
+                              Планируется закончить: ${currentTask.planEndDate}
+                              `
+          }
+        }
+        task.appendChild(tooltip)
+      })
+    }
+
+    operateCells()
+    operateBacklog()
 
   }
 
@@ -165,7 +197,11 @@ async function createApp() {
     for (let i = 0; i < backlog.length; i++) {
       const task = backlog[i]
       const div = document.createElement("div")
+      div.id = task.id
       div.className = "backlog__task"
+      div.draggable = true
+      div.setAttribute('ondragstart', 'startDrag(event)')
+      div.setAttribute('ondragend', 'endDrag(event)')
       div.innerHTML = `
                       <div class="backlog__title">${task.subject}</div>
                       <div class="backlog__description">${task.description}</div>
@@ -225,9 +261,22 @@ async function createApp() {
   createNextButton()
   createCells()
   assignTasks()
-  createTooltips()
   createBacklog()
+  createTooltips()
   createNavigation()
+}
+
+function startDrag(e) {
+  task = e.target
+  tooltip = task.getElementsByClassName('tooltip')[0]
+  tooltip.classList = "hidden"
+  console.log(tooltip)
+}
+
+function endDrag(e) {
+  task = e.target
+  tooltip = task.getElementsByClassName('hidden')[0]
+  tooltip.classList = "tooltip"
 }
 
 createApp()

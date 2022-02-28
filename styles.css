@@ -68,13 +68,13 @@ h1 {
   border-bottom: none;
 }
 
-.table_cell-task {
+.table__cell-task {
   background-color: var(--second);
   border-radius: var(--radius);
   transform: scale(0.90);
 }
 
-.table_cell-task:hover {
+.table__cell-task:hover {
   background-color: var(--accent);
   color: white;
   cursor: pointer;
@@ -82,7 +82,7 @@ h1 {
   z-index: 1;
 }
 
-.table_cell-task:hover>.tooltip {
+.table__cell-task:hover>.tooltip {
   visibility: visible;
 }
 
@@ -96,11 +96,21 @@ h1 {
   background-color: #fff;
   visibility: hidden;
   color: black;
+  padding: 0 5px;
   text-align: center;
   display: flex;
   justify-content: center;
   align-content: center;
   flex-direction: column;
+}
+
+.backlog__task .tooltip {
+  min-width: fit-content;
+  transform: translate(-146%, -63%);
+}
+
+.hidden {
+  display: none;
 }
 
 .backlog {
@@ -122,18 +132,25 @@ h1 {
   text-decoration: underline;
 }
 
+.backlog__task:hover>.tooltip {
+  visibility: visible;
+}
+
 .backlog__task {
   font-size: 13px;
   margin: 10px;
   border: 1px solid #fff;
   padding: 7px;
   border-radius: var(--radius);
+  position: relative;
 }
 
 .backlog__task:hover {
   background-color: var(--accent);
   border-color: var(--accent);
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .backlog__task:hover>.backlog__title {

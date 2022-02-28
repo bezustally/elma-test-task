@@ -56,12 +56,7 @@ function separateTasks(tasks) {
 }
 
 async function createApp() {
-
-  const root = document.getElementById("root")
-  const table = document.createElement('div')
-  table.classList = "table"
-  table.style.gridTemplateColumns = `repeat(${AMOUNT_OF_DAYS + 1}, 1fr)`
-
+  
   const tasks = await getData(taskUrl)
   const users = await getData(usersUrl)
   let dates = defineDates(tasks)
@@ -69,7 +64,12 @@ async function createApp() {
   const { assignedTasks, backlog } = separateTasks(tasks)
 
   function createTable() {
+    const root = document.getElementById("root")
+    const table = document.createElement('div')
+    table.classList = "table"
+    table.style.gridTemplateColumns = `repeat(${AMOUNT_OF_DAYS + 1}, 1fr)`
     root.appendChild(table)
+
     for (let i = 0; i <= AMOUNT_OF_DAYS; i++) {
       const header = document.createElement('div')
       table.appendChild(header)
@@ -83,13 +83,18 @@ async function createApp() {
 
   function createTableHeaders() {
     const headers = document.querySelectorAll('.table div :first-child')
-    headers.forEach((header, idx) => {
-      if (dates[idx] === TODAY) {
+
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]
+      if (i == 0) {
+        header.parentElement.classList = 'executors'
+      }
+      if (dates[i] === TODAY) {
         header.parentElement.classList = 'today'
       }
-      header.textContent = dates[idx]
+      header.textContent = dates[i]
       header.classList = 'table__header'
-    })
+    }   
   }
 
   function createExecutors() {
@@ -132,8 +137,6 @@ async function createApp() {
           cell.classList.toggle("table__cell-task")
           cell.id = task.id
           cell.draggable = true
-          cell.setAttribute('ondragstart', 'startDrag(event)')
-          cell.setAttribute('ondragend', 'endDrag(event)')
         }
       })
     })
@@ -200,8 +203,6 @@ async function createApp() {
       div.id = task.id
       div.className = "backlog__task"
       div.draggable = true
-      div.setAttribute('ondragstart', 'startDrag(event)')
-      div.setAttribute('ondragend', 'endDrag(event)')
       div.innerHTML = `
                       <div class="backlog__title">${task.subject}</div>
                       <div class="backlog__description">${task.description}</div>
@@ -242,16 +243,112 @@ async function createApp() {
       shiftDates(amountOfDays)
       
       const headers = document.querySelectorAll('.table div .table__header')
-      headers.forEach((header, idx) => {
+
+      for (let i = 0; i < headers.length; i++) {
+        const header = headers[i]
+        if (i == 0) { continue }
         header.parentElement.classList = ''
-        if (dates[idx] === TODAY) {
+        if (dates[i] === TODAY) {
           header.parentElement.classList = 'today'
         }
-        header.textContent = shiftedDates[idx]
+        header.textContent = shiftedDates[i]
         header.classList = 'table__header'
-      })
+      }
+    }
+  }
+
+  function createDragNDrop() {
+    const draggables = document.querySelectorAll('.table__cell, .table__executor, .backlog__task')
+    draggables.forEach(draggable => {
+      draggable.addEventListener('dragstart', dragStart)
+      draggable.addEventListener('dragend', dragEnd)
+      draggable.addEventListener('dragenter', dragEnter)
+      draggable.addEventListener('dragleave', dragLeave)
+      draggable.addEventListener('dragover', dragOver)
+      draggable.addEventListener('drop', dragDrop)
+    })
+
+    const destinations = document.querySelectorAll('.backlog, .backlog__header')
+    destinations.forEach(destination => {
+      destination.addEventListener('dragenter', dragEnter)
+      destination.addEventListener('dragleave', dragLeave)
+      destination.addEventListener('drop', dragDrop)
+    })
+
+    function dragEnter() {
+
+      const _ = this.classList.value
+      if (_ == "table__executor" || _ == "table__cell" || _ == "table__cell table__cell-task" || _ == "backlog") {
+        this.style.backgroundColor = "var(--accent)"
+      }
+      if (_ == "backlog__header") {
+        if (this.parentElement.style.backgroundColor = "var(--accent)") {
+          this.style.backgroundColor = "var(--accent)"
+        } else {
+          this.parentElement.style.backgroundColor = "var(--accent)"
+          this.style.backgroundColor = "var(--accent)"
+        }
+      }
     }
 
+    function dragLeave() {
+
+      const _ = this.classList.value
+      if (_ == "table__executor" || _ == "table__cell" || _ == "table__cell table__cell-task" || _ == "backlog") {
+        this.style.backgroundColor = ""
+      }
+      if (_ == "backlog__header") {
+        if (this.parentElement.style.backgroundColor = "var(--accent)") {
+          this.style.backgroundColor = ""
+        }
+      } else if (_ == "backlog") {
+        this.getElementsByClassName('backlog__header')[0].style.backgroundColor = ""
+      }
+    }
+
+    function dragOver() {
+      return
+    }
+
+    function dragDrop() {
+      console.log(this)
+      const _ = this.classList.value
+      const parent = task.parentElement
+
+      switch (this.classList.value) {
+        case "backlog":
+          this.style.backgroundColor = ""
+          console.log(task.id)
+          break
+        case "backlog__header":
+          parent.style.backgroundColor = ""
+          this.style.backgroundColor = ""
+          console.log(task.id)
+          break
+        case "table__executor":
+          this.style.backgroundColor = ""
+          console.log(task.id)
+          break
+        case "table__cell":
+          console.log("table cell!")
+          this.style.backgroundColor = ""
+          console.log(task.id)
+          break
+      }
+    }
+
+    function dragStart() {
+      this.style.opacity = "0.5"
+      console.log(this.id)
+      tooltip = this.getElementsByClassName('tooltip')[0]
+      tooltip.classList.value = "hidden"
+    }
+
+    function dragEnd() {
+      this.style.opacity = "1"
+      tooltip = this.getElementsByClassName('hidden')[0]
+      tooltip.classList = "tooltip"
+    }
   }
 
   createTable()
@@ -264,19 +361,7 @@ async function createApp() {
   createBacklog()
   createTooltips()
   createNavigation()
-}
-
-function startDrag(e) {
-  task = e.target
-  tooltip = task.getElementsByClassName('tooltip')[0]
-  tooltip.classList = "hidden"
-  console.log(tooltip)
-}
-
-function endDrag(e) {
-  task = e.target
-  tooltip = task.getElementsByClassName('hidden')[0]
-  tooltip.classList = "tooltip"
+  createDragNDrop()
 }
 
 createApp()

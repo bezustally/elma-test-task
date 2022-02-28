@@ -16,6 +16,10 @@
   justify-content: center;
 }
 
+* [draggable=true] {
+  cursor: move;
+}
+
 @font-face {
   font-family: Inter;
   src: url("/font.ttf") format("truetype")
@@ -52,6 +56,11 @@ h1 {
   font-size: 13px;
 }
 
+.table>div {
+  border-right: 0.5px solid var(--main);
+  height: min-content;
+}
+
 .table__header, .table__executor, .table__cell {
   width: 100px;
   height: 50px;
@@ -61,6 +70,24 @@ h1 {
   align-content: center;
   flex-direction: column;
   border-bottom: 0.5px solid var(--second);
+}
+
+.table__cell {
+  border-radius: var(--radius);
+}
+
+.table__cell:hover {
+  background-color: var(--main)
+}
+
+.table__executor {
+  background-color: var(--main);
+  border-bottom: 1px solid transparent
+}
+
+.table__executor:hover {
+  background-color: var(--main);
+  border-bottom: 1px solid var(--accent);
 }
 
 .table__header {
@@ -121,11 +148,12 @@ h1 {
 
 .backlog__header {
   text-align: center;
-  margin: 13px;
-  margin: 20px;
+  margin: 0 auto;
+  padding: 20px 0px;
   font-size: 22px;
   font-weight: 300;
   cursor: pointer;
+  width: min-content;
 }
 
 .backlog__header:hover {
@@ -205,4 +233,8 @@ h1 {
   left: -20px;
   color: var(--accent);
   font-weight: 500;
+}
+
+.executors {
+  border-left: 0.5px solid var(--main)
 }

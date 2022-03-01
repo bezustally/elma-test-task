@@ -123,7 +123,7 @@ async function createApp() {
     for (let i = 0; i < cells.length; i++) {
       let userIndex = i % users.length
       let dateIndex = Math.floor(i / users.length) + 1
-      cells[i].id = `${dates[dateIndex]} ${users[userIndex].id}`
+      cells[i].id = `${dates[dateIndex]}_${users[userIndex].id}`
     }
   }
 
@@ -132,10 +132,11 @@ async function createApp() {
     cells.forEach(cell => {
       cell.textContent = ''
       cell.classList = 'table__cell'
-      assignedTasks.forEach(task => {
-        if (task.planStartDate == cell.id.split(' ')[0] && task.executor == cell.id.split(' ')[1]) {
+      assignedTasks.forEach((task, index) => {
+        if (task.planStartDate == cell.id.split('_')[0] && task.executor == cell.id.split('_')[1]) {
           cell.textContent = task.subject
           cell.classList.toggle("table__cell-task")
+          cell.dataset.taskId = index
           cell.id = task.id
           cell.draggable = true
         }
@@ -149,40 +150,47 @@ async function createApp() {
       const cellsWithTask = document.querySelectorAll('.table__cell-task')
 
       cellsWithTask.forEach(cell => {
-        const tooltip = document.createElement('span')
-        tooltip.className = 'tooltip'
+        if (cell.childElementCount < 1) {
+          const tooltip = document.createElement('span')
+          tooltip.className = 'tooltip'
 
-        const taskId = cell.id
+          const taskId = cell.id
 
-        for (let i = 0; i < assignedTasks.length; i++) {
-          if (taskId === assignedTasks[i].id) {
-            currentTask = assignedTasks[i]
-            tooltip.innerHTML = `
+          for (let i = 0; i < assignedTasks.length; i++) {
+            if (taskId === assignedTasks[i].id) {
+              currentTask = assignedTasks[i]
+              tooltip.innerHTML = `
                               ${currentTask.description}
                               <br><br>
-                              срок ${currentTask.planEndDate}
+                              сроки<br>
+                              ${currentTask.planStartDate}
+                              <br>
+                              ${currentTask.planEndDate}
                               `
+            }
           }
+          cell.appendChild(tooltip)
         }
-        cell.appendChild(tooltip)
       })
     }
 
     function operateBacklog() {
       const backloggedTasks = document.querySelectorAll('.backlog__task')
-      
-      backloggedTasks.forEach((task, idx) => {
-        const tooltip = document.createElement('span')
-        tooltip.className = 'tooltip'
 
-        tooltip.innerHTML = `
+      backloggedTasks.forEach((task, idx) => {
+        if (task.childElementCount < 3) {
+          const tooltip = document.createElement('span')
+          tooltip.className = 'tooltip'
+
+          tooltip.innerHTML = `
                             Задача создана: ${backlog[idx].creationDate}
                             <br><br>
                             Планируется начать: ${backlog[idx].planStartDate}
                             <br>
                             Планируется закончить: ${backlog[idx].planEndDate}
                             `
-        task.appendChild(tooltip)
+          task.appendChild(tooltip)
+        }
       })
     }
 
@@ -256,7 +264,7 @@ async function createApp() {
   }
 
   function createDragNDrop() {
-    const items = document.querySelectorAll('.table__cell')
+    const items = document.querySelectorAll('.table__cell, .table__cell-task .backlog__task, .backlog, .table__executor')
     items.forEach(item => {
       item.addEventListener('dragstart', dragStart)
       item.addEventListener('dragend', dragEnd)
@@ -266,22 +274,10 @@ async function createApp() {
       item.addEventListener('drop', dragDrop)
     })
 
-    const tasks = document.querySelectorAll('.backlog__task')
-    tasks.forEach(task => {
-      task.addEventListener('dragstart', dragStart)
-      task.addEventListener('dragend', dragEnd)
-      task.addEventListener('dragenter', dragEnter)
-      task.addEventListener('dragleave', dragLeave)
-      task.addEventListener('dragover', dragOver)
-      task.addEventListener('drop', dragDrop)
-    })
-
-    const destinations = document.querySelectorAll('.backlog, .table__executor')
-    destinations.forEach(destination => {
-      destination.addEventListener('dragenter', dragEnter)
-      destination.addEventListener('dragleave', dragLeave)
-      destination.addEventListener('dragover', dragOver)
-      destination.addEventListener('drop', dragDrop)
+    const backloggedTasks = document.querySelectorAll(".backlog__task")
+    backloggedTasks.forEach(task => {
+      task.removeEventListener('drop', dragDrop)
+      task.removeEventListener('dragenter', dragEnter)
     })
 
     function dragEnter() {
@@ -307,56 +303,112 @@ async function createApp() {
       newString = string.replace(' visiting', '')
       this.classList.value = newString
 
-      console.log(this)
+      let isBackloggedTask = e.dataTransfer.getData("id").includes('backlog')
+      let taskId = e.dataTransfer.getData("taskId")
+      console.log(taskId)
 
-      switch (this.classList.value) {
+      let executorId = parseInt(this.id.split("_")[1])
+      let targetClass = this.classList.value
+
+      switch (targetClass) {
         case "table__executor":
-          
-          const executorId = this.id.split("_")[1]
-          let data = e.dataTransfer.getData("text/plain")
+          if (isBackloggedTask) {
+            let backlogId = e.dataTransfer.getData("id").split("_")[1]
+            let task = backlog[backlogId]
+            task.executor = executorId
 
-          let taskPositionInBacklog = data.split("_")[1]
-          console.log(taskPositionInBacklog)
-          removeTaskFromBacklog(taskPositionInBacklog)
-          
-          e.target.innerHTML = data
-          
-          console.log(backlog)
+            assignedTasks.push(task)
+            updateTask(task)
+
+
+            const taskNode = document.querySelectorAll(`[data-task-id*="${taskId}"]`)[0]
+            taskNode.parentElement.removeChild(taskNode)
+
+          } else {
+            let task = assignedTasks[taskId]
+            task.executor = executorId
+
+            const taskNode = document.getElementById(`${task.id}`)
+            taskNode.innerHTML = ''
+            taskNode.classList = 'table__cell'
+            const attributes = ["id", "data-task-id", "draggable"]
+            attributes.forEach(attr => taskNode.removeAttribute(attr))
+            
+            updateTask(task)
+          }
           break
-        
+
         case "table__cell":
-          console.log("switch case", this.id)
-          break
-        
-        case "table__cell table__cell-task":
-          console.log("switch case", this.id)
-          break
-        
-        case "backlog":
-          console.log("switch case", this.id)
+          if (isBackloggedTask) {
+            let backlogId = e.dataTransfer.getData("id").split("_")[1]
+            let task = backlog[backlogId]
+            
+            task.planStartDate = e.target.id.split("_")[0]
+            task.executor = parseInt(e.target.id.split("_")[1])
+
+            assignedTasks.push(task)
+            updateTask(task)
+
+
+            const taskNode = document.querySelectorAll(`[data-task-id*="${taskId}"]`)[0]
+            taskNode.parentElement.removeChild(taskNode)
+
+          } else {
+            let task = assignedTasks[taskId]
+
+            task.planStartDate = e.target.id.split("_")[0]
+            task.executor = parseInt(e.target.id.split("_")[1])
+
+            const taskNode = document.getElementById(`${task.id}`)
+            taskNode.innerHTML = ''
+            taskNode.classList = 'table__cell'
+            const attributes = ["id", "data-task-id", "draggable"]
+            attributes.forEach(attr => taskNode.removeAttribute(attr))
+
+            updateTask(task)
+          }
           break
       }
 
-      function removeTaskFromBacklog(index) {
-        backlog.splice(index, 1)
-        createBacklog()
-        createTooltips()
-        createDragNDrop()
+      function updateTask(task) {
+
+        const cells = document.querySelectorAll('.table__cell')
+        cells.forEach((cell, index) => {
+          if (task.planStartDate == cell.id.split('_')[0] && task.executor == cell.id.split('_')[1]) {
+            cell.textContent = task.subject
+            cell.classList.toggle("table__cell-task")
+            cell.dataset.taskId = assignedTasks.indexOf(task)
+            cell.id = task.id
+            cell.draggable = true
+          }
+        })
+
+        let taskHTML = document.getElementById(`${task.id}`) || document.querySelectorAll(`[data-task-id*="${taskId}"]`)[0]
+        let tooltip = document.createElement('span')
+        tooltip.className = 'tooltip'
+        tooltip.innerHTML = `
+                            ${task.description}
+                            <br><br>
+                            сроки<br>
+                            ${task.planStartDate}
+                            <br>
+                            ${task.planEndDate}
+                            `
+        taskHTML.appendChild(tooltip)
       }
     }
 
     function dragStart(e) {
-      e.dataTransfer.effectAllowed = 'move'
-      e.dataTransfer.setData("text/plain", e.target.getAttribute('id'))
+      e.dataTransfer.setData("id", e.target.getAttribute('id'))
+      e.dataTransfer.setData("taskId", e.target.getAttribute('data-task-id'))
       e.target.style.opacity = "0.5"
-      console.log(e)
       tooltip = e.target.getElementsByClassName('tooltip')[0]
-      tooltip.classList.value = "hidden"
+      tooltip.classList = "hidden"
     }
 
     function dragEnd(e) {
       e.target.style.opacity = "1"
-      tooltip = e.target.getElementsByClassName('hidden')[0]
+      tooltip = e.target.getElementsByClassName('hidden')[0] || {}
       tooltip.classList = "tooltip"
     }
   }

@@ -17,7 +17,7 @@
 }
 
 * [draggable=true] {
-  cursor: move;
+  cursor: grab;
 }
 
 @font-face {
@@ -36,8 +36,14 @@ span {
 }
 
 .container {
-  width: 90vw;
+  width: 95vw;
   margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .mt-1 {
@@ -46,7 +52,8 @@ span {
 
 h1 {
   text-align: center;
-  margin: 30px;
+  display: inline;
+  margin-left: 3px;
 }
 
 .table {
@@ -99,13 +106,13 @@ h1 {
   background-color: var(--second);
   border-radius: var(--radius);
   transform: scale(0.90);
+  position: relative;
 }
 
 .table__cell-task:hover {
   background-color: var(--accent);
   color: white;
   cursor: pointer;
-  position: relative;
   z-index: 1;
 }
 
@@ -203,7 +210,6 @@ h1 {
   height: 24px;
   text-indent: 3px;
   outline: none;
-
 }
 
 .prev-btn, .next-btn {
@@ -231,10 +237,17 @@ h1 {
 .today::before {
   content: "Today";
   position: absolute;
-  top: -25px;
-  left: -20px;
-  color: var(--accent);
+  top: 50%;
+  left: -25px;
+  color: white;
   font-weight: 500;
+  border-radius: var(--radius);
+  padding: 1px 6px;
+  z-index: 123;
+  background-color: var(--accent);
+  transform: rotate(-90deg);
+  opacity: 1;
+  font-size: 0.9em;
 }
 
 .executors {
@@ -243,4 +256,33 @@ h1 {
 
 .visiting {
   background-color: var(--accent);
+}
+
+@media (max-width: 1024px) {
+  .table {
+    overflow-x: scroll;
+  }
+
+  input::placeholder {
+    color: transparent;
+  }
+
+  .backlog__task {
+    font-size: 12px;
+  }
+
+  .backlog__input {
+    width: 90%;
+  }
+}
+
+@media (max-width: 700px) {
+  aside {
+    display: none;
+  }
+
+  h1 {
+    position: sticky;
+    top: 10px;
+  }
 }

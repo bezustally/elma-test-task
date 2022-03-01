@@ -266,6 +266,8 @@ async function createApp() {
     const items = document.querySelectorAll('.table__cell, .table__cell-task .backlog__task, .backlog, .table__executor')
     items.forEach(item => {
       item.addEventListener('dragstart', dragStart)
+      item.addEventListener('touchstart', showTooltip)
+      item.addEventListener('touchend', hideTooltip)
       item.addEventListener('dragend', dragEnd)
       item.addEventListener('dragenter', dragEnter)
       item.addEventListener('dragleave', dragLeave)
@@ -448,6 +450,16 @@ async function createApp() {
       e.target.style.opacity = "1"
       tooltip = e.target.getElementsByClassName('hidden')[0] || {}
       tooltip.classList = "tooltip"
+    }
+
+    function showTooltip(e) {
+      e.target.style.zIndex = '1'
+      e.target.getElementsByClassName('tooltip')[0].style.visibility = "visible"
+    }
+
+    function hideTooltip(e) {
+      e.target.style.zIndex = ''
+      e.target.getElementsByClassName('tooltip')[0].style.visibility = "hidden"
     }
   }
 

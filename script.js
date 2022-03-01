@@ -1,13 +1,8 @@
 const AMOUNT_OF_DAYS = 7
 const TODAY = new Date().toISOString().split('T')[0]
 
-// for prod
-// const taskUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks'
-// const usersUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/users'
-
-// for development
-const taskUrl = 'tasks.json'
-const usersUrl = 'users.json'
+const taskUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/tasks'
+const usersUrl = 'https://varankin_dev.elma365.ru/api/extensions/2a38760e-083a-4dd0-aebc-78b570bfd3c7/script/users'
 
 async function getData(url) {
   const response = await fetch(url)
@@ -160,8 +155,6 @@ async function createApp() {
             if (taskId === assignedTasks[i].id) {
               currentTask = assignedTasks[i]
               tooltip.innerHTML = `
-                              ${currentTask.description}
-                              <br><br>
                               сроки<br>
                               ${currentTask.planStartDate}
                               <br>
